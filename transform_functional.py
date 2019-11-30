@@ -22,24 +22,6 @@ def rotation(imgs, angle):
     
     return trans_imgs
 
-def horizontal_flip(imgs):
-    # need to other param which has grad_fn and grad
-    h, w = imgs.shape[2:]
-    
-    # Get differentiable transform matrix 
-    sin = angle.sin()
-    cos = angle.cos()
-    zero = angle - angle
-    gridmat1 = torch.cat((cos, -sin*h/w, zero), dim=1).reshape(imgs.size(0),1,3)
-    gridmat2 = torch.cat((sin*h/w, cos, zero), dim=1).reshape(imgs.size(0),1,3)
-    gridmat = torch.cat((gridmat1, gridmat2), dim=1)
-    
-    # Rotate the original image
-    grid = F.affine_grid(gridmat, imgs.size())
-    trans_imgs = F.grid_sample(imgs, grid,)
-    
-    return trans_imgs
-
 def sheer_x(imgs, c):
     h, w = imgs.shape[2:]
     

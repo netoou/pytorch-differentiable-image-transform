@@ -5,8 +5,6 @@ Transform functions are tested on CUDA available environment
 #### Supporting operations
 1. Affine transform
     * Rotation
-    * Horizontal flip
-    * Vertical flip
     * Translate X
     * Translate Y
     * Sheer X
