@@ -59,6 +59,14 @@ class Contrast(nn.Module):
         self.alpha = alpha
 
     def forward(self, x, b):     
-        return contrast(x, b*self.alpha)  
+        return contrast(x, b*self.alpha)
+    
+class Saturation(nn.Module):
+    def __init__(self, alpha=1):
+        super(Saturation, self).__init__()
+        self.alpha = alpha
+
+    def forward(self, x, s):     
+        return saturation(x, s*self.alpha)
 
     

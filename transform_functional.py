@@ -5,6 +5,8 @@ To make differentiable function, I used pytorch tensor operations and functional
 import torch.nn.functional as F
 import torch
 
+from utils import *
+
 def rotation(imgs, angle):
     h, w = imgs.shape[2:]
     
@@ -97,5 +99,14 @@ def contrast(imgs, b):
     trans_imgs = torch.clamp(imgs * (1 + b.repeat(1, h*w*c).reshape(imgs.size())), 0, 1)
     
     return trans_imgs
+
+def saturation(imgs, s):
+    c, h, w = imgs.shape[-3:]
+    hsv_imgs = rgb_to_hsv(imgs)
+    hue, sat, val = hsv_imgs[:, 0, :, :], hsv_imgs[:, 1, :, :], hsv_imgs[:, 2, :, :]
+    sat = sat * s.repeat(1, h*w).reshape(-1, h, w)
+    trans_imgs = torch.stack((hue, sat, val), dim=1)
+    
+    return hsv_to_rgb(trans_imgs)
 
 
