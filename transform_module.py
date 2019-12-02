@@ -7,7 +7,7 @@ from transform_functional import *
 
 class Rotation(nn.Module):
     def __init__(self, alpha=1):
-        super(Rotation, self).__iRotation_()
+        super(Rotation, self).__init__()
         self.alpha = alpha
 
     def forward(self, x, angle):     
@@ -69,4 +69,12 @@ class Saturation(nn.Module):
     def forward(self, x, s):     
         return saturation(x, s*self.alpha)
 
+    
+class Gaussian_noise(nn.Module):
+    def __init__(self, alpha=1):
+        super(Gaussian_noise, self).__init__()
+        self.alpha = alpha
+
+    def forward(self, x, var):     
+        return gaussiannoise(x, var*self.alpha)
     

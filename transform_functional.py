@@ -88,6 +88,30 @@ def translate_y(imgs, c):
     
     return trans_imgs
 
+def horizontal_flip(imgs):
+    
+    gridmat = torch.tensor([[-1.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],]).to(imgs.device)
+    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
+    
+    # Flip the original image
+    grid = F.affine_grid(gridmat, imgs.size())
+    trans_imgs = F.grid_sample(imgs, grid, )
+    
+    return trans_imgs
+
+def vertical_flip(imgs):
+    
+    gridmat = torch.tensor([[1.0, 0.0, 0.0],
+                            [0.0, -1.0, 0.0],]).to(imgs.device)
+    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
+    
+    # Flip the original image
+    grid = F.affine_grid(gridmat, imgs.size())
+    trans_imgs = F.grid_sample(imgs, grid, )
+    
+    return trans_imgs
+
 def brightness(imgs, b):
     c, h, w = imgs.shape[-3:]
     trans_imgs = torch.clamp(imgs + b.repeat(1, h*w*c).reshape(imgs.size()), 0, 1)
@@ -108,5 +132,15 @@ def saturation(imgs, s):
     trans_imgs = torch.stack((hue, sat, val), dim=1)
     
     return hsv_to_rgb(trans_imgs)
+
+def gaussiannoise(imgs, var):
+    # only need variance of normal
+    c, h, w = imgs.shape[-3:]
+    normal = torch.distributions.normal.Normal(torch.tensor(0.0).to(var.device), var.view(-1))
+    noise = normal.rsample((c, h, w)).permute(3,0,1,2)
+
+    trans_imgs = imgs + noise
+    
+    return trans_imgs
 
 
