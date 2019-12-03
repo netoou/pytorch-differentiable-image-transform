@@ -143,4 +143,25 @@ def gaussiannoise(imgs, var):
     
     return trans_imgs
 
+def sharpeness(imgs, m):
+    blur_imgs = linear_blur(imgs)
+    
+    mask = imgs - blur_imgs
+
+    return imgs + mask * m[None][None].reshape(imgs.size(0), 1, 1, 1)
+
+def bluring(imgs):
+    conv_filters = (torch.tensor([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]) / 9).repeat(4,1).reshape(4,3,3).to(imgs.device)
+    trans_imgs = []
+    for img, c_filter in zip(imgs, conv_filters):
+        trans_imgs.append(F.conv2d(img[None], c_filter.repeat(3,1,1,1), padding=0, groups=3,))
+        
+    bg = imgs.clone()
+    trans_imgs = torch.cat(trans_imgs, dim=0)
+    trans_imgs = torch.clamp(trans_imgs, 0, 1)
+    
+    bg[:,:, 1:-1, 1:-1] = trans_imgs
+    
+    return bg
+
 

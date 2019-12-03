@@ -69,7 +69,6 @@ class Saturation(nn.Module):
     def forward(self, x, s):     
         return saturation(x, s*self.alpha)
 
-    
 class Gaussian_noise(nn.Module):
     def __init__(self, alpha=1):
         super(Gaussian_noise, self).__init__()
@@ -77,4 +76,13 @@ class Gaussian_noise(nn.Module):
 
     def forward(self, x, var):     
         return gaussiannoise(x, var*self.alpha)
+    
+class Sharpness(nn.Module):
+    def __init__(self, alpha=0.5):
+        super(Sharpness, self).__init__()
+        self.alpha = alpha
+
+    def forward(self, x, mag):     
+        return sharpness(x, mag*self.alpha)
+    
     
