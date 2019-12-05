@@ -88,30 +88,6 @@ def translate_y(imgs, c):
     
     return trans_imgs
 
-def horizontal_flip(imgs):
-    
-    gridmat = torch.tensor([[-1.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0],]).to(imgs.device)
-    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
-    
-    # Flip the original image
-    grid = F.affine_grid(gridmat, imgs.size())
-    trans_imgs = F.grid_sample(imgs, grid, )
-    
-    return trans_imgs
-
-def vertical_flip(imgs):
-    
-    gridmat = torch.tensor([[1.0, 0.0, 0.0],
-                            [0.0, -1.0, 0.0],]).to(imgs.device)
-    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
-    
-    # Flip the original image
-    grid = F.affine_grid(gridmat, imgs.size())
-    trans_imgs = F.grid_sample(imgs, grid, )
-    
-    return trans_imgs
-
 def brightness(imgs, b):
     c, h, w = imgs.shape[-3:]
     trans_imgs = torch.clamp(imgs + b.repeat(1, h*w*c).reshape(imgs.size()), 0, 1)
@@ -150,6 +126,21 @@ def sharpeness(imgs, m):
 
     return imgs + mask * m[None][None].reshape(imgs.size(0), 1, 1, 1)
 
+# non-differentiable w.r.t prarm
+def solarize(imgs, v):
+    b, c, w, h = imgs.size()
+    # Invert all pixel values above a threshold
+    mask = imgs > v.repeat(1, c*w*h).reshape(b, c, w, h)
+    
+    trans_imgs = imgs
+    trans_imgs[mask] = 1.0 - trans_imgs[mask]
+    
+    return trans_imgs
+
+# no-param functions
+def invert(imgs):
+    return 1 - imgs
+
 def bluring(imgs):
     conv_filters = (torch.tensor([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]) / 9).repeat(4,1).reshape(4,3,3).to(imgs.device)
     trans_imgs = []
@@ -163,5 +154,29 @@ def bluring(imgs):
     bg[:,:, 1:-1, 1:-1] = trans_imgs
     
     return bg
+
+def horizontal_flip(imgs):
+    
+    gridmat = torch.tensor([[-1.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],]).to(imgs.device)
+    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
+    
+    # Flip the original image
+    grid = F.affine_grid(gridmat, imgs.size())
+    trans_imgs = F.grid_sample(imgs, grid, )
+    
+    return trans_imgs
+
+def vertical_flip(imgs):
+    
+    gridmat = torch.tensor([[1.0, 0.0, 0.0],
+                            [0.0, -1.0, 0.0],]).to(imgs.device)
+    gridmat = gridmat.repeat(imgs.size(0), 1, 1)
+    
+    # Flip the original image
+    grid = F.affine_grid(gridmat, imgs.size())
+    trans_imgs = F.grid_sample(imgs, grid, )
+    
+    return trans_imgs
 
 
